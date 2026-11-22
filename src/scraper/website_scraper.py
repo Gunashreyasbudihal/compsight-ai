@@ -2,14 +2,15 @@
 """
 CompSight - Website Extraction Engine
 
-Uses Playwright to load publicly accessible webpages
+Uses Scrapling to fetch publicly accessible webpages
 and BeautifulSoup to extract structured website content.
 """
 
 from urllib.parse import urljoin, urlparse
 from ipaddress import ip_address
-from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
+from scrapling.fetchers import Fetcher
+from scrapling.fetchers import StealthyFetcher
 
 
 def validate_url(url: str) -> str:
@@ -53,36 +54,21 @@ def extract_website_content(url: str) -> dict:
 
     url = validate_url(url)
 
-    with sync_playwright() as playwright:
+    html = None
+    final_url = url
 
-        browser = playwright.chromium.launch(headless=True)
-
-        try:
-            page = browser.new_page()
-
-            page.set_default_navigation_timeout(30000)
-
-            response = page.goto(
-                url,
-                wait_until="domcontentloaded"
-            )
-
-            if response is None:
-                raise RuntimeError("The website did not return a response.")
-
-            if response.status >= 400:
-                raise RuntimeError(
-                    f"Website returned HTTP status {response.status}."
-                )
-
-            page.wait_for_timeout(1500)
-
-            html = page.content()
-
-            final_url = page.url
-
-        finally:
-            browser.close()
+    try:
+        response = Fetcher.get(url, timeout=30)
+        if response.status_code in (403, 429, 503) or response.status_code >= 400:
+            raise Exception("Fetcher failed or blocked")
+        html = response.text
+        final_url = response.url or url
+    except Exception:
+        response = StealthyFetcher().fetch(url, headless=True)
+        if response.status_code >= 400:
+            raise RuntimeError(f"Website returned HTTP status {response.status_code}.")
+        html = response.html
+        final_url = response.url or url
 
     soup = BeautifulSoup(html, "html.parser")
 
