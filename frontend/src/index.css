@@ -1,0 +1,280 @@
+@import "tailwindcss";
+
+:root {
+  /* Obsidian Design System */
+  --color-canvas: #0B0D11;
+  --color-surface: #11141B;
+  --color-border: #1E2430;
+  --color-text: #F1F5F9;
+  --color-muted: #94A3B8;
+
+  /* Semantic Accents */
+  --color-emerald: #10B981;
+  --color-amber: #F59E0B;
+  --color-crimson: #EF4444;
+
+  /* Tailwind v4 integration */
+  --tw-gradient-stops: theme(colors.transparent), theme(colors.transparent);
+}
+
+@layer utilities {
+  /* Typography */
+  .font-ui {
+    @apply font-[inherit] font-serif;
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  }
+
+  .font-mono {
+    @apply font-[inherit] font-mono;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  /* Layout */
+  .terminal-layout {
+    @apply min-h-screen bg-canvas text-text;
+  }
+
+  .surface {
+    @apply bg-surface border border-border;
+  }
+
+  /* KPI Cards */
+  .kpi-card {
+    @apply surface p-4 rounded-lg border-border;
+  }
+
+  .kpi-value {
+    @apply text-2xl font-bold;
+  }
+
+  .kpi-label {
+    @apply text-sm text-muted mt-1;
+  }
+
+  /* Battlecard Grid */
+  .bento-grid {
+    @apply grid gap-4;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  .card {
+    @apply surface rounded-lg p-4 border-border;
+  }
+
+  .card-title {
+    @apply text-lg font-bold mb-3 text-text;
+  }
+
+  .feature-item {
+    @apply flex items-center gap-2 py-2 text-muted;
+  }
+
+  .feature-dot {
+    @apply w-2 h-2 rounded-full bg-emerald;
+  }
+
+  .market-chip {
+    @apply px-3 py-1 text-sm rounded-full bg-border;
+  }
+
+  .pricing-field {
+    @apply flex justify-between py-2;
+  }
+
+  .domain-pill {
+    @apply inline-flex items-center gap-2 px-3 py-1 text-sm rounded-full bg-border hover:bg-border/50 transition-colors;
+  }
+
+  .tab {
+    @apply flex items-center gap-2 px-4 py-2 text-muted hover:text-text transition-colors;
+  }
+
+  .tab.active {
+    @apply text-text;
+  }
+
+  .tab-underline {
+    @apply h-0.5 w-full bg-emerald rounded-b-full;
+  }
+
+  .competitor-item {
+    @apply w-full text-left p-3 rounded-lg hover:bg-border/50 transition-colors;
+  }
+
+  .competitor-item.active {
+    @apply bg-border/20 border border-emerald;
+  }
+
+  .competitor-info {
+    @apply flex flex-col gap-1;
+  }
+
+  .competitor-name {
+    @apply font-semibold text-text;
+  }
+
+  .competitor-url {
+    @apply text-sm text-muted;
+  }
+}
+
+/* Global Styles */
+html,
+body,
+#root {
+  @apply bg-canvas text-text;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+/* Terminal Sidebar */
+.sidebar {
+  @apply w-80 bg-surface border-r border-border flex flex-col;
+  height: 100vh;
+  overflow-y-auto;
+}
+
+.sidebar-header {
+  @apply p-6 border-b border-border;
+}
+
+.brand {
+  @apply flex flex-col gap-1;
+}
+
+.logo {
+  @apply text-2xl font-bold text-emerald;
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+.tagline {
+  @apply text-sm text-muted;
+}
+
+.analyze-section {
+  @apply p-4 border-b border-border;
+}
+
+.analyze-form {
+  @apply flex flex-col gap-3;
+}
+
+.input-group {
+  @apply flex items-center gap-2;
+}
+
+.icon {
+  @apply text-muted flex-shrink-0;
+}
+
+.url-input {
+  @apply flex-1 px-3 py-2 bg-canvas border border-border rounded-lg text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-emerald;
+}
+
+button {
+  @apply px-4 py-2 bg-emerald hover:bg-emerald/90 text-canvas font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.competitors-section {
+  @apply flex-1 p-4 overflow-y-auto;
+}
+
+.section-title {
+  @apply text-sm font-semibold text-muted mb-3 uppercase tracking-wider;
+}
+
+.competitors-list {
+  @apply flex flex-col gap-2;
+}
+
+.empty-state {
+  @apply text-center py-4;
+}
+
+.text-muted {
+  @apply text-muted;
+}
+
+/* Header */
+.header {
+  @apply border-b border-border bg-surface/50;
+}
+
+.header-content {
+  @apply flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 p-4;
+}
+
+.header-left {
+  @apply flex flex-col gap-1;
+}
+
+.company-name {
+  @apply text-xl font-bold text-text m-0;
+}
+
+.kpi-grid {
+  @apply grid grid-cols-4 gap-3;
+}
+
+/* Tab Navigation */
+.tabs {
+  @apply flex gap-1 p-1 bg-surface/50 border-b border-border;
+  justify-content: center;
+}
+
+/* Empty State */
+.empty-state-page {
+  @apply flex-1 flex items-center justify-center;
+}
+
+.empty-content {
+  @apply text-center p-8 rounded-lg border border-border bg-surface;
+}
+
+.tab-placeholder {
+  @apply flex-1 flex items-center justify-center;
+}
+
+.placeholder-content {
+  @apply text-center p-8 rounded-lg border border-border bg-surface;
+}
+
+/* Animations */
+.slide-up {
+  @apply animate-slide-up;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .sidebar {
+    @apply w-16;
+  }
+
+  .sidebar-text {
+    @apply hidden;
+  }
+
+  .bento-grid {
+    @apply grid gap-4;
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-grid {
+    @apply grid grid-cols-2 gap-2;
+  }
+
+  .header-content {
+    @apply flex flex-col gap-2 p-4;
+  }
+}
