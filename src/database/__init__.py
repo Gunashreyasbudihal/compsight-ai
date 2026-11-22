@@ -328,3 +328,105 @@ class Database:
             )
             count = cursor.fetchone()[0]
             return count > 0
+
+    def get_competitor(self, competitor_id: int) -> tuple[DatabaseSnapshot, int] | None:
+        """Get the latest snapshot and row count for a given competitor ID.
+
+        Args:
+            competitor_id: The primary key of the snapshot.
+
+        Returns:
+            Tuple of (snapshot, snapshot_count) or None if not found.
+        """
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.execute(
+                """
+                SELECT id, competitor_name, website_url, profile_json, captured_at
+                FROM snapshots WHERE id = ?
+                """,
+                (competitor_id,),
+            )
+            row = cursor.fetchone()
+            if row is None:
+                return None
+
+            snapshot = DatabaseSnapshot.from_dict({
+                "competitor_name": row[1],
+                "website_url": row[2],
+                "profile_json": row[3],
+                "captured_at": row[4],
+            })
+
+            # Count total snapshots for this competitor
+            count_cursor = conn.execute(
+                "SELECT COUNT(*) FROM snapshots WHERE competitor_name = ?",
+                (snapshot.competitor_name,),
+            )
+            snapshot_count = count_cursor.fetchone()[0]
+
+            return (snapshot, snapshot_count)
+
+    def list_tracked_competitors(self) -> list[dict]:
+        """List all unique competitors with metadata.
+
+        Returns:
+            List of dicts with id, url, company_name, snapshot_count, updated_at.
+        """
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.execute(
+                """
+                SELECT
+                    MAX(id) as id,
+                    website_url as url,
+                    competitor_name as company_name,
+                    COUNT(*) as snapshot_count,
+                    MAX(captured_at) as updated_at
+                FROM snapshots
+                GROUP BY competitor_name, website_url
+                ORDER BY updated_at DESC
+                """
+            )
+            results = []
+            for row in cursor:
+                results.append({
+                    "id": row["id"],
+                    "url": row["url"],
+                    "company_name": row["company_name"],
+                    "snapshot_count": row["snapshot_count"],
+                    "updated_at": row["updated_at"],
+                })
+            return results
+
+    def get_latest_by_competitor_and_exclude(
+        self, competitor_name: str, website_url: str
+    ) -> DatabaseSnapshot | None:
+        """Get the latest snapshot for a competitor, excluding a specific URL.
+
+        Args:
+            competitor_name: The name of the competitor to look up.
+            website_url: The website URL to exclude.
+
+        Returns:
+            The most recent DatabaseSnapshot, or None if no snapshots exist.
+        """
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.execute(
+                """
+                SELECT competitor_name, website_url, profile_json, captured_at FROM snapshots
+                WHERE competitor_name = ? AND website_url != ?
+                ORDER BY captured_at DESC
+                LIMIT 1
+                """,
+                (competitor_name, website_url),
+            )
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            data = {
+                "competitor_name": row[0],
+                "website_url": row[1],
+                "profile_json": row[2],
+                "captured_at": row[3],
+            }
+            return DatabaseSnapshot.from_dict(data)
