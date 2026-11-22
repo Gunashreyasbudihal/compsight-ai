@@ -145,7 +145,7 @@ def extract_website_content(url: str) -> dict:
 
 if __name__ == "__main__":
 
-    test_url = "https://www.apple.com/"
+    test_url = "https://www.samsung.com/in/"
 
     print("\nCOMP SIGHT - WEBSITE EXTRACTION")
     print("=" * 50)
