@@ -12,6 +12,7 @@ from src.database import Database, DatabaseSnapshot
 from src.extraction.competitor_extractor import extract_competitor_information
 from src.models.competitor import CompetitorProfile
 from src.scraper.website_scraper import extract_website_content
+from src.scraper.news_search import fetch_competitor_news
 from src.analysis.diff_engine import compare_profiles
 
 app = FastAPI(title="CompSight API")
@@ -79,6 +80,25 @@ def get_competitor(competitor_id: int) -> dict:
         "snapshot_count": snapshot_count,
         "history_timestamps": history_timestamps,
         "diff": diff,
+    }
+
+
+@app.get("/api/competitors/{competitor_id}/news")
+def get_competitor_news(competitor_id: int) -> dict:
+    """Fetch recent news articles for a competitor."""
+    db = get_db()
+    result = db.get_competitor(competitor_id)
+
+    if result is None:
+        raise HTTPException(status_code=404, detail="Competitor not found")
+
+    snapshot, _ = result
+    company_name = snapshot.competitor_name
+    articles = fetch_competitor_news(company_name)
+
+    return {
+        "company_name": company_name,
+        "articles": articles,
     }
 
 
