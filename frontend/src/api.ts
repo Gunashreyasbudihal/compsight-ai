@@ -4,9 +4,7 @@ import type {
   CompetitorListItem,
   CompetitorDetail,
   AnalyzeResponse,
-  HealthResponse,
-  ProfileDiff,
-  CompetitorProfile,
+  CompetitorNewsResponse,
 } from './types'
 
 const API_BASE = 'http://127.0.0.1:8000'
@@ -18,7 +16,7 @@ class ApiClient {
     this.baseUrl = baseUrl
   }
 
-  async health(): Promise<HealthResponse> {
+  async health(): Promise<{ status: 'ok' | 'error' }> {
     const res = await fetch(`${this.baseUrl}/api/health`)
     if (!res.ok) throw new Error('Health check failed')
     return res.json()
@@ -48,7 +46,13 @@ class ApiClient {
     }
     return res.json()
   }
+
+  async fetchCompetitorNews(competitorId: number | string): Promise<CompetitorNewsResponse> {
+    const res = await fetch(`${this.baseUrl}/api/competitors/${competitorId}/news`)
+    if (!res.ok) throw new Error(`Competitor ${competitorId} news not found`)
+    return res.json()
+  }
 }
 
 export const api = new ApiClient()
-export type { ProfileDiff, CompetitorProfile }
+export type { CompetitorNewsResponse }

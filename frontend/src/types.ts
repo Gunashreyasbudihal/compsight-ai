@@ -30,11 +30,11 @@ export interface CompetitorProfile {
 }
 
 export interface CompetitorListItem {
-  id: string
+  id: number | string
   name: string
   website_url: string
   snapshot_count: number
-  last_captured: string
+  last_captured?: string
 }
 
 export interface CompetitorDetail {
@@ -77,6 +77,19 @@ export interface AnalyzeResponse {
 
 export interface HealthResponse {
   status: 'ok' | 'error'
+}
+
+export interface NewsArticle {
+  title: string
+  url: string
+  source: string
+  date: string
+  snippet: string
+}
+
+export interface CompetitorNewsResponse {
+  company_name: string
+  articles: NewsArticle[]
 }
 
 export type Tab = 'battlecard' | 'matrix' | 'timeline' | 'evidence'

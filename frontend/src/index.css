@@ -131,7 +131,7 @@ body,
 .sidebar {
   @apply w-80 bg-surface border-r border-border flex flex-col;
   height: 100vh;
-  overflow-y-auto;
+  @apply overflow-y-auto;
 }
 
 .sidebar-header {

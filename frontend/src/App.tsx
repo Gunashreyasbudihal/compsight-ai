@@ -6,14 +6,16 @@ import { Sidebar } from './components/Sidebar'
 import { Header } from './components/Header'
 import { Tabs } from './components/Tabs'
 import { Battlecard } from './components/Battlecard'
-import { ProductMatrix, DiffTimeline, EvidenceView } from './components/Placeholders'
-import type { CompetitorDetail, Tab } from './types'
+import { ProductMatrix } from './components/ProductMatrix'
+import { DiffTimeline } from './components/DiffTimeline'
+import { EvidenceView } from './components/EvidenceView'
+import type { CompetitorDetail, Tab, CompetitorListItem } from './types'
 import { api } from './api'
 
 type ActiveTab = Tab
 
 export default function App() {
-  const [competitors, setCompetitors] = useState<Array<{ id: string; name: string; website_url: string; snapshot_count: number }>>([])
+  const [competitors, setCompetitors] = useState<CompetitorListItem[]>([])
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [activeTab, setActiveTab] = useState<ActiveTab>('battlecard')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -22,7 +24,16 @@ export default function App() {
   // Load competitors on mount
   useEffect(() => {
     api.listCompetitors()
-      .then((data) => setCompetitors(data))
+      .then((data) => {
+        const mapped: CompetitorListItem[] = data.map((c: any) => ({
+          id: c.id,
+          name: c.company_name || c.name || 'Unknown',
+          website_url: c.url || c.website_url || '',
+          snapshot_count: c.snapshot_count || 1,
+          last_captured: c.updated_at || c.last_captured,
+        }))
+        setCompetitors(mapped)
+      })
       .catch(() => setCompetitors([]))
   }, [])
 
@@ -118,9 +129,9 @@ export default function App() {
             {currentTab === 'battlecard' && (
               <Battlecard key="battlecard" competitor={competitorDetail} />
             )}
-            {currentTab === 'matrix' && <ProductMatrix key="matrix" />}
-            {currentTab === 'timeline' && <DiffTimeline key="timeline" />}
-            {currentTab === 'evidence' && <EvidenceView key="evidence" />}
+            {currentTab === 'matrix' && <ProductMatrix key="matrix" competitor={competitorDetail} />}
+            {currentTab === 'timeline' && <DiffTimeline key="timeline" competitor={competitorDetail} />}
+            {currentTab === 'evidence' && <EvidenceView key="evidence" competitor={competitorDetail} />}
           </AnimatePresence>
         </main>
       </div>
