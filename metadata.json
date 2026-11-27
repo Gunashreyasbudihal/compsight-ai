@@ -1,0 +1,6 @@
+{
+  "name": "CompSight — Live Competitive Intelligence Terminal",
+  "description": "Automated competitor scraping, AI battlecards, product matrices, and real-time branching diff timelines in one obsidian spatial terminal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
